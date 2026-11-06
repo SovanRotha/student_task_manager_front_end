@@ -2,8 +2,6 @@ from sqlalchemy import Column, Integer, String, DateTime, func
 
 from back_end_student_task_manager.database.base import Base
 
-
-
 class User(Base):
     __tablename__ = "users"
 
