@@ -1,4 +1,4 @@
-from datatime import datetime
+from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
@@ -6,7 +6,6 @@ class UserResponse(BaseModel):
     id: int
     name: str
     email: EmailStr
-    password: str
     role: str
     profile: str | None = None
     status: str
@@ -34,4 +33,3 @@ class UserUpdate(BaseModel):
     status: str | None = Field(default=None, max_length=20)
     created_at: datetime | None = None
     updated_at: datetime | None = None
-

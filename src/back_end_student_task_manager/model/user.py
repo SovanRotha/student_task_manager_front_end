@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-
+from sqlalchemy.orm import relationship
 from back_end_student_task_manager.database.base import Base
 
 class User(Base):
@@ -19,4 +19,28 @@ class User(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now()
+    )
+
+    categories = relationship(
+        "Category",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    notifications = relationship(
+        "Notification",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    tasks = relationship(
+        "Task",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    activity_logs = relationship(
+        "ActivityLog",
+        back_populates="user",
+        cascade="all, delete-orphan"
     )

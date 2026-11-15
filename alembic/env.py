@@ -1,4 +1,3 @@
-
 from logging.config import fileConfig
 
 from alembic import context
@@ -6,18 +5,20 @@ from alembic import context
 from back_end_student_task_manager.database.base import Base
 from back_end_student_task_manager.database.connection import engine
 
-# Import all models so Alembic can detect their tables
+# Import all models
 from back_end_student_task_manager.model.user import User
+from back_end_student_task_manager.model.category import Category
+from back_end_student_task_manager.model.task import Task
+from back_end_student_task_manager.model.notification import Notification
+from back_end_student_task_manager.model.activity import ActivityLog
 
 
-# Alembic configuration
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 
-# SQLAlchemy metadata
 target_metadata = Base.metadata
 
 
