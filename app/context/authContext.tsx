@@ -12,6 +12,7 @@ import {
 import {
     login as loginService,
     register as registerService,
+    normalizeUser,
     
 } from "../service/Auth/auth";
 
@@ -42,11 +43,25 @@ export const AuthContextProvider = ({
     // Restore authentication when refreshing the browser
     useEffect(() => {
         const savedToken = localStorage.getItem("token");
+        const savedUser = localStorage.getItem("user");
 
         if (savedToken) {
             setToken(savedToken);
             Api.defaults.headers.common["Authorization"] =
                 `Bearer ${savedToken}`;
+        }
+
+        if (savedUser) {
+            try {
+                setUser(JSON.parse(savedUser) as User);
+            } catch {
+                localStorage.removeItem("user");
+                setUser(normalizeUser(null, savedToken ?? ""));
+            }
+        } else if (savedToken) {
+            const restoredUser = normalizeUser(null, savedToken);
+            setUser(restoredUser);
+            if (restoredUser) localStorage.setItem("user", JSON.stringify(restoredUser));
         }
 
         setIsLoading(false);
@@ -59,6 +74,7 @@ export const AuthContextProvider = ({
         setToken(data.token);
 
         localStorage.setItem("token", data.token);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
         Api.defaults.headers.common["Authorization"] =
             `Bearer ${data.token}`;
@@ -75,6 +91,7 @@ export const AuthContextProvider = ({
         setToken(data.token);
 
         localStorage.setItem("token", data.token);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
         Api.defaults.headers.common["Authorization"] =
             `Bearer ${data.token}`;
@@ -85,6 +102,7 @@ export const AuthContextProvider = ({
         setToken(null);
 
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
 
         delete Api.defaults.headers.common["Authorization"];
     };

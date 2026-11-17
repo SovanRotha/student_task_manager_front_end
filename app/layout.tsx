@@ -7,6 +7,11 @@ import "./globals.css";
 import { AuthContextProvider } from "./context/authContext";
 import { SidebarContextProvider } from "./context/sidebarContext";
 import Sidebar from "./components/sidebar";
+import { CategoryContextProvider } from "./context/categoryContext";
+import { TaskContextProvider } from "./context/taskContext";
+import { NotificationContextProvider } from "./context/notificationContext";
+import { ActivityContextProvider } from "./context/activityContext";
+import { DashboardContextProvider } from "./context/dashboardContext";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -35,22 +40,32 @@ export default function RootLayout({
         >
             <body className="h-full overflow-hidden">
                 <AuthContextProvider>
-                    <SidebarContextProvider>
-                        <div className="flex h-screen w-full overflow-hidden bg-white">
+                    <ActivityContextProvider>
+                        <DashboardContextProvider>
+                            <NotificationContextProvider>
+                                <SidebarContextProvider>
+                                    <CategoryContextProvider>
+                                        <TaskContextProvider>
+                                        <div className="flex h-screen w-full overflow-hidden bg-white">
 
-                            {/* Shared Sidebar */}
-                            <Sidebar />
+                                            {/* Shared Sidebar */}
+                                            <Sidebar />
 
-                            {/* Main Content */}
-                            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                                            {/* Main Content */}
+                                            <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
 
-                                <main className="min-h-0 flex-1 overflow-y-auto">
-                                    {children}
-                                </main>
+                                                <main className="min-h-0 flex-1 overflow-y-auto">
+                                                    {children}
+                                                </main>
 
-                            </div>
-                        </div>
-                    </SidebarContextProvider>
+                                            </div>
+                                        </div>
+                                        </TaskContextProvider>
+                                    </CategoryContextProvider>
+                                </SidebarContextProvider>
+                            </NotificationContextProvider>
+                        </DashboardContextProvider>
+                    </ActivityContextProvider>
                 </AuthContextProvider>
             </body>
         </html>

@@ -1,7 +1,6 @@
 
 "use client";
 
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSidebar } from "../context/sidebarContext";
@@ -53,12 +52,17 @@ const menuItems = [
     },
 ];
 
-function Sidebar({ children }: { children?: ReactNode }) {
+function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
 
     const { isOpen, toggleSidebar, closeSidebar } = useSidebar();
     const { user, logout } = useAuth();
+
+    // The root route is the login screen, so it should use the full viewport.
+    if (pathname === "/" || pathname === "/login" || pathname === "/register") {
+        return null;
+    }
 
     const handleNavigation = () => {
         if (window.matchMedia("(max-width: 767px)").matches) {
@@ -69,11 +73,11 @@ function Sidebar({ children }: { children?: ReactNode }) {
     const handleLogout = () => {
         logout();
         closeSidebar();
-        router.push("/login");
+        router.push("/");
     };
 
     return (
-        <div className="min-h-screen">
+        <>
             {isOpen && (
                 <>
                     <div
@@ -81,18 +85,18 @@ function Sidebar({ children }: { children?: ReactNode }) {
                         className="fixed inset-0 z-40 bg-black/40 md:hidden"
                     />
 
-                    <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-gray-200 bg-white px-4 py-6 md:sticky md:z-20">
-                        <div className="mb-10 flex items-center justify-between px-3">
+                    <aside className="fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-slate-200/80 bg-gradient-to-b from-white via-white to-indigo-50/40 px-4 py-5 shadow-xl shadow-slate-900/5 md:sticky md:z-20 md:shadow-none">
+                        <div className="mb-8 flex items-center justify-between rounded-2xl bg-white/80 px-3 py-2">
                             <div className="flex items-center gap-2">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#5145CD] text-white shadow-md shadow-indigo-500/20">
                                     <ListTodo size={21} />
                                 </div>
 
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900">
+                                    <h1 className="text-lg font-extrabold tracking-tight text-slate-900">
                                         TaskFlow
                                     </h1>
-                                    <p className="text-xs text-gray-400">
+                                    <p className="text-[11px] text-slate-500">
                                         Student Task Manager
                                     </p>
                                 </div>
@@ -107,11 +111,11 @@ function Sidebar({ children }: { children?: ReactNode }) {
                         </div>
 
                         <div className="flex-1">
-                            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                            <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                                 Workspace
                             </p>
 
-                            <nav className="space-y-1">
+                            <nav className="space-y-1.5">
                                 {menuItems.map((item) => {
                                     const Icon = item.icon;
                                     const isActive =
@@ -125,8 +129,8 @@ function Sidebar({ children }: { children?: ReactNode }) {
                                             onClick={handleNavigation}
                                             className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all ${
                                                 isActive
-                                                    ? "bg-blue-50 text-blue-600"
-                                                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                                    ? "bg-gradient-to-r from-indigo-50 to-violet-50 text-[#5145CD] shadow-sm ring-1 ring-indigo-100"
+                                                    : "text-slate-600 hover:bg-white hover:text-slate-950 hover:shadow-sm"
                                             }`}
                                         >
                                             <Icon size={20} />
@@ -145,17 +149,17 @@ function Sidebar({ children }: { children?: ReactNode }) {
                         </div>
 
                         <div className="border-t border-gray-100 pt-4">
-                            <div className="mb-3 flex items-center gap-3 rounded-xl bg-gray-50 p-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-600">
+                            <div className="mb-3 flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 font-bold text-[#5145CD]">
                                     {user?.name?.charAt(0).toUpperCase() || "U"}
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-semibold text-gray-800">
+                                    <p className="truncate text-sm font-bold text-slate-900">
                                         {user?.name || "Student"}
                                     </p>
 
-                                    <p className="truncate text-xs text-gray-500">
+                                    <p className="truncate text-xs text-slate-500">
                                         {user?.email || "Student Account"}
                                     </p>
                                 </div>
@@ -173,8 +177,7 @@ function Sidebar({ children }: { children?: ReactNode }) {
                 </>
             )}
 
-            <main className={isOpen ? "md:ml-64" : ""}>{children}</main>
-        </div>
+        </>
     );
 }
 

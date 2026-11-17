@@ -1,11 +1,11 @@
 export interface User {
     id: number;
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-    profile: string;
-    status: string;
+    name?: string;
+    email?: string;
+    password?: string;
+    role?: string;
+    profile?: string;
+    status?: string;
 }
 
 export interface AuthResponse {
