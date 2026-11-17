@@ -12,6 +12,7 @@ import { TaskContextProvider } from "./context/taskContext";
 import { NotificationContextProvider } from "./context/notificationContext";
 import { ActivityContextProvider } from "./context/activityContext";
 import { DashboardContextProvider } from "./context/dashboardContext";
+import AuthGate from "./components/authGate";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -40,13 +41,14 @@ export default function RootLayout({
         >
             <body className="h-full overflow-hidden">
                 <AuthContextProvider>
-                    <ActivityContextProvider>
-                        <DashboardContextProvider>
-                            <NotificationContextProvider>
-                                <SidebarContextProvider>
-                                    <CategoryContextProvider>
-                                        <TaskContextProvider>
-                                        <div className="flex h-screen w-full overflow-hidden bg-white">
+                    <AuthGate>
+                        <ActivityContextProvider>
+                            <DashboardContextProvider>
+                                <NotificationContextProvider>
+                                    <SidebarContextProvider>
+                                        <CategoryContextProvider>
+                                            <TaskContextProvider>
+                                            <div className="flex h-screen w-full overflow-hidden bg-white">
 
                                             {/* Shared Sidebar */}
                                             <Sidebar />
@@ -59,13 +61,14 @@ export default function RootLayout({
                                                 </main>
 
                                             </div>
-                                        </div>
-                                        </TaskContextProvider>
-                                    </CategoryContextProvider>
-                                </SidebarContextProvider>
-                            </NotificationContextProvider>
-                        </DashboardContextProvider>
-                    </ActivityContextProvider>
+                                            </div>
+                                            </TaskContextProvider>
+                                        </CategoryContextProvider>
+                                    </SidebarContextProvider>
+                                </NotificationContextProvider>
+                            </DashboardContextProvider>
+                        </ActivityContextProvider>
+                    </AuthGate>
                 </AuthContextProvider>
             </body>
         </html>

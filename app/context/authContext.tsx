@@ -25,7 +25,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (name: string, email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -84,8 +84,10 @@ export const AuthContextProvider = ({
         name: string,
         email: string,
         password: string
-    ) => {
+    ): Promise<boolean> => {
         const data = await registerService(name, email, password);
+
+        if (!data.token) return false;
 
         setUser(data.user);
         setToken(data.token);
@@ -95,6 +97,7 @@ export const AuthContextProvider = ({
 
         Api.defaults.headers.common["Authorization"] =
             `Bearer ${data.token}`;
+        return true;
     };
 
     const logout = () => {

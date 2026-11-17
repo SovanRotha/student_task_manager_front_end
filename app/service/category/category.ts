@@ -2,10 +2,11 @@ import Api from "../../service/Api/api";
 import type { Category } from "../../model/category/category";
 
 
-export const getCategories = async (): Promise<Category[]> => {
+export const getCategories = async (userId: number): Promise<Category[]> => {
     try {
-        const response = await Api.get('/categories');
-        return response.data as Category[];
+        const response = await Api.get('/categories', { params: { user_id: userId } });
+        const categories = response.data as Category[];
+        return categories.filter((category) => Number(category.user_id) === userId);
     } catch (error) {
         console.error("Error fetching categories:", error);
         throw error;
@@ -42,10 +43,11 @@ export const deleteCategory = async (id: number): Promise<void> => {
     }
 };
 
-export const getCategoryById = async (id: number): Promise<Category | null> => {
+export const getCategoryById = async (id: number, userId: number): Promise<Category | null> => {
     try {
-        const response = await Api.get(`/categories/${id}`);
-        return response.data as Category;
+        const response = await Api.get(`/categories/${id}`, { params: { user_id: userId } });
+        const category = response.data as Category;
+        return Number(category.user_id) === userId ? category : null;
     } catch (error) {
         console.error("Error fetching category by ID:", error);
         return null;

@@ -24,8 +24,8 @@ export default function Register() {
         }
         setLoading(true);
         try {
-            await register(name.trim(), email.trim(), password);
-            router.push("/dashboard");
+            const signedIn = await register(name.trim(), email.trim(), password);
+            router.push(signedIn ? "/dashboard" : "/");
         } catch (err) {
             const response = err as { response?: { data?: { detail?: unknown } }; message?: string };
             const detail = response.response?.data?.detail;

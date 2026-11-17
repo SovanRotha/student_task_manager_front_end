@@ -11,6 +11,7 @@ import {
 
 import type { Task } from "../model/task/task";
 import { useActivity } from "./activityContext";
+import { useAuth } from "./authContext";
 
 import {
     getAllTasks,
@@ -45,17 +46,23 @@ export function TaskContextProvider({
     children: ReactNode;
 }) {
     const { logActivity } = useActivity();
+    const { user } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Fetch all tasks
     const fetchTasks = useCallback(async () => {
+        if (!user?.id) {
+            setTasks([]);
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
 
-            const data = await getAllTasks();
+            const data = await getAllTasks(user.id);
             setTasks(data);
         } catch (err) {
             setError("Failed to fetch tasks.");
@@ -63,7 +70,7 @@ export function TaskContextProvider({
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.id]);
 
     // Fetch task by ID
     const fetchTaskById = async (id: number): Promise<Task | null> => {

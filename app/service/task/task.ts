@@ -1,10 +1,14 @@
 import Api from "../../service/Api/api";
 import type { Task } from "../../model/task/task";
 
-export const getAllTasks = async (): Promise<Task[]> => {
+export const getAllTasks = async (userId: number): Promise<Task[]> => {
     try {
-        const response = await Api.get("/tasks");
-        return response.data as Task[];
+        const response = await Api.get("/tasks", { params: { user_id: userId } });
+        const tasks = response.data as Task[];
+
+        // Keep the visible task list scoped to the signed-in user even if the
+        // API returns a broader collection. Ownership must be attached to each task.
+        return tasks.filter((task) => Number(task.user_id ?? task.userId) === userId);
     } catch (error) {
         console.error("Error fetching tasks:", error);
         throw error;

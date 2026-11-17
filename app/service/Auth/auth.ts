@@ -65,9 +65,9 @@ export const register = async (name: string, email: string, password: string) =>
         };
         const token = payload.token ?? payload.access_token;
 
-        if (!token) throw new Error("The registration response did not include an authentication token.");
-
-        return { token, user: normalizeUser(payload.user, token) };
+        // Some registration endpoints create the account without starting a
+        // session. In that case the caller can send the user to sign in.
+        return { token: token ?? null, user: token ? normalizeUser(payload.user, token) : null };
     }catch (error) {
         console.error("Registration error:", error);
         throw error;

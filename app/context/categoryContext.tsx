@@ -11,6 +11,7 @@ import {
 
 import type { Category } from "../model/category/category";
 import { useActivity } from "./activityContext";
+import { useAuth } from "./authContext";
 
 import {
     getCategories,
@@ -47,17 +48,23 @@ export function CategoryContextProvider({
     children: ReactNode;
 }) {
     const { logActivity } = useActivity();
+    const { user } = useAuth();
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Get all categories
     const fetchCategories = useCallback(async () => {
+        if (!user?.id) {
+            setCategories([]);
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
 
-            const data = await getCategories();
+            const data = await getCategories(user.id);
             setCategories(data);
         } catch (err) {
             setError("Failed to fetch categories.");
@@ -65,13 +72,14 @@ export function CategoryContextProvider({
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.id]);
 
     // Get category by ID
     const fetchCategoryById = async (
         id: number
     ): Promise<Category | null> => {
-        return await getCategoryById(id);
+        if (!user?.id) return null;
+        return await getCategoryById(id, user.id);
     };
 
     // Create category
@@ -79,6 +87,9 @@ export function CategoryContextProvider({
         category: Omit<Category, "id" | "created_at" | "updated_at">
     ): Promise<Category> => {
         try {
+            if (!user?.id || Number(category.user_id) !== user.id) {
+                throw new Error("Cannot create a category for another user.");
+            }
             setError(null);
 
             const newCategory = await createCategory(category);
@@ -99,6 +110,9 @@ export function CategoryContextProvider({
         category: Partial<Omit<Category, "id" | "created_at" | "updated_at">>
     ): Promise<Category> => {
         try {
+            if (!user?.id || !categories.some((item) => item.id === id && Number(item.user_id) === user.id)) {
+                throw new Error("Category does not belong to the current user.");
+            }
             setError(null);
 
             const updatedCategory = await updateCategory(id, category);
@@ -120,6 +134,9 @@ export function CategoryContextProvider({
     // Delete category
     const removeCategory = async (id: number): Promise<void> => {
         try {
+            if (!user?.id || !categories.some((item) => item.id === id && Number(item.user_id) === user.id)) {
+                throw new Error("Category does not belong to the current user.");
+            }
             setError(null);
 
             const deletedCategory = categories.find((item) => item.id === id);
