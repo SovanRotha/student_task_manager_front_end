@@ -28,8 +28,4 @@ class UserUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=2, max_length=100)
     email: EmailStr | None = None
     password: str | None = Field(default=None, min_length=6, max_length=255)
-    role: str | None = Field(default=None, max_length=20)
     profile: str | None = None
-    status: str | None = Field(default=None, max_length=20)
-    created_at: datetime | None = None
-    updated_at: datetime | None = None

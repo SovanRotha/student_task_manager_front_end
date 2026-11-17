@@ -1,17 +1,29 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from back_end_student_task_manager.database.connection import get_db
 from back_end_student_task_manager.controller import auth_controller
 from back_end_student_task_manager.schema.auth import LoginRequest, TokenResponse
 from back_end_student_task_manager.core.dependencies import get_current_user
-from back_end_student_task_manager.schema.user import UserResponse
+from back_end_student_task_manager.schema.user import UserCreate, UserResponse
+from back_end_student_task_manager.controller import user_controller
 
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
+
+registration_router = APIRouter(tags=["Authentication"])
+
+# Public account registration
+@registration_router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    return user_controller.create(db, user)
 
 
 # Login

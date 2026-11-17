@@ -4,20 +4,21 @@ from back_end_student_task_manager.model.activity import ActivityLog
 from back_end_student_task_manager.schema.activity import ActivityLogCreate
 
 
-def get_recent_activity_logs(db: Session, limit: int = 5):
+def get_recent_activity_logs(db: Session, user_id: int, limit: int = 5):
     return (
         db.query(ActivityLog)
+        .filter(ActivityLog.user_id == user_id)
         .order_by(ActivityLog.created_at.desc())
         .limit(limit)
         .all()
     )
 
-def get_all_activity_logs(db: Session):
-    return db.query(ActivityLog).order_by(ActivityLog.created_at.desc()).all()
+def get_all_activity_logs(db: Session, user_id: int):
+    return db.query(ActivityLog).filter(ActivityLog.user_id == user_id).order_by(ActivityLog.created_at.desc()).all()
 
 
-def get_activity_log_by_id(db: Session, activity_id: int):
-    return db.query(ActivityLog).filter(ActivityLog.id == activity_id).first()
+def get_activity_log_by_id(db: Session, activity_id: int, user_id: int):
+    return db.query(ActivityLog).filter(ActivityLog.id == activity_id, ActivityLog.user_id == user_id).first()
 
 
 def get_activity_logs_by_user(db: Session, user_id: int):

@@ -7,6 +7,8 @@ from back_end_student_task_manager.schema.task import (
     TaskCreate,
     TaskUpdate
 )
+from back_end_student_task_manager.core.dependencies import get_current_user
+from back_end_student_task_manager.model.user import User
 
 router = APIRouter(
     prefix="/tasks",
@@ -15,22 +17,22 @@ router = APIRouter(
 
 @router.get("", response_model=list[TaskResponse], include_in_schema=False)
 @router.get("/", response_model=list[TaskResponse])
-def index(db: Session = Depends(get_db)):
-    return task_controller.index(db)
+def index(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return task_controller.index(db, current_user.id)
 
 @router.get("/{id}", response_model=TaskResponse)
-def show(id: int, db: Session = Depends(get_db)):
-    return task_controller.show(db, id)
+def show(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return task_controller.show(db, id, current_user.id)
 
 @router.post("", response_model=TaskResponse, include_in_schema=False)
 @router.post("/", response_model=TaskResponse)
-def create(task: TaskCreate, db: Session = Depends(get_db)):
-    return task_controller.create(db, task)
+def create(task: TaskCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return task_controller.create(db, task, current_user.id)
 
 @router.put("/{id}", response_model=TaskResponse)
-def update(id: int, task: TaskUpdate, db: Session = Depends(get_db)):
-    return task_controller.update(db, id, task)
+def update(id: int, task: TaskUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return task_controller.update(db, id, task, current_user.id)
 
 @router.delete("/{id}", response_model=TaskResponse)
-def delete(id: int, db: Session = Depends(get_db)):
-    return task_controller.delete(db, id)
+def delete(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return task_controller.delete(db, id, current_user.id)

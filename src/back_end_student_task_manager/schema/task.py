@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class TaskResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
-    user_id: int
+    user_id: int | None = None
     category_id: int | None = None
     title: str
     description: str | None = None

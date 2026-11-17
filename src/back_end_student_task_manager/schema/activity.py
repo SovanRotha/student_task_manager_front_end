@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class ActivityLogCreate(BaseModel):
-    user_id: int
+    user_id: int | None = None
     task_id: int | None = None
 
     action: str = Field(

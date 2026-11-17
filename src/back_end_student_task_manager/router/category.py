@@ -7,6 +7,8 @@ from back_end_student_task_manager.schema.category import (
     CategoryCreate,
     CategoryUpdate
 )
+from back_end_student_task_manager.core.dependencies import get_current_user
+from back_end_student_task_manager.model.user import User
 
 router = APIRouter(
     prefix="/categories",
@@ -15,22 +17,22 @@ router = APIRouter(
 
 @router.get("", response_model=list[CategoryResponse], include_in_schema=False)
 @router.get("/", response_model=list[CategoryResponse])
-def index(db: Session = Depends(get_db)):
-    return category_controller.index(db)
+def index(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return category_controller.index(db, current_user.id)
 
 @router.get("/{id}", response_model=CategoryResponse)
-def show(id: int, db: Session = Depends(get_db)):
-    return category_controller.show(db, id)
+def show(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return category_controller.show(db, id, current_user.id)
 
 @router.post("", response_model=CategoryResponse, include_in_schema=False)
 @router.post("/", response_model=CategoryResponse)
-def create(category: CategoryCreate, db: Session = Depends(get_db)):
-    return category_controller.create(db, category)
+def create(category: CategoryCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return category_controller.create(db, category, current_user.id)
 
 @router.put("/{id}", response_model=CategoryResponse)
-def update(id: int, category: CategoryUpdate, db: Session = Depends(get_db)):
-    return category_controller.update(db, id, category)
+def update(id: int, category: CategoryUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return category_controller.update(db, id, category, current_user.id)
 
 @router.delete("/{id}", response_model=CategoryResponse)
-def delete(id: int, db: Session = Depends(get_db)):
-    return category_controller.delete(db, id)
+def delete(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return category_controller.delete(db, id, current_user.id)

@@ -5,21 +5,21 @@ from back_end_student_task_manager.schema.category import (
     CategoryUpdate,
 )
 
-def index(db: Session):
-    return db.query(Category).all()
+def index(db: Session, user_id: int):
+    return db.query(Category).filter(Category.user_id == user_id).all()
 
 
-def count_categories(db: Session):
-    return db.query(Category).count()
+def count_categories(db: Session, user_id: int):
+    return db.query(Category).filter(Category.user_id == user_id).count()
 
-def show(db: Session, id: int):
-    return db.query(Category).filter(Category.id == id).first()
+def show(db: Session, id: int, user_id: int):
+    return db.query(Category).filter(Category.id == id, Category.user_id == user_id).first()
 
-def create(db: Session, category_data: CategoryCreate):
+def create(db: Session, category_data: CategoryCreate, user_id: int):
     db_category = Category(
         name=category_data.name,
         description=category_data.description,
-        user_id=category_data.user_id
+        user_id=user_id
     )
 
     db.add(db_category)
@@ -28,8 +28,8 @@ def create(db: Session, category_data: CategoryCreate):
 
     return db_category
 
-def update(db: Session, id: int, category_data: CategoryUpdate):
-    db_category = db.query(Category).filter(Category.id == id).first()
+def update(db: Session, id: int, category_data: CategoryUpdate, user_id: int):
+    db_category = db.query(Category).filter(Category.id == id, Category.user_id == user_id).first()
 
     if not db_category:
         return None
@@ -38,16 +38,14 @@ def update(db: Session, id: int, category_data: CategoryUpdate):
         db_category.name = category_data.name
     if category_data.description is not None:
         db_category.description = category_data.description
-    if category_data.user_id is not None:
-        db_category.user_id = category_data.user_id
 
     db.commit()
     db.refresh(db_category)
 
     return db_category
 
-def delete(db: Session, id: int):
-    db_category = db.query(Category).filter(Category.id == id).first()
+def delete(db: Session, id: int, user_id: int):
+    db_category = db.query(Category).filter(Category.id == id, Category.user_id == user_id).first()
 
     if not db_category:
         return None

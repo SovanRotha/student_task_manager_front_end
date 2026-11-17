@@ -5,36 +5,33 @@ from fastapi.encoders import jsonable_encoder
 from back_end_student_task_manager.service import (
     activity_service,
     task_service,
-    user_service,
     category_service,
 )
 
 
-def get_dashboard(db: Session):
+def get_dashboard(db: Session, user_id: int):
 
     # 1. Count statistics
-    total_users = user_service.count_users(db)
-    total_tasks = task_service.count_tasks(db)
-    total_categories = category_service.count_categories(db)
+    total_tasks = task_service.count_tasks(db, user_id)
+    total_categories = category_service.count_categories(db, user_id)
 
     # 2. Count tasks by status
-    total_task_in_progress = task_service.count_tasks_in_progress(db)
-    total_task_completed = task_service.count_tasks_completed(db)
-    total_task_pending = task_service.count_tasks_pending(db)
-    total_task_overdue = task_service.count_tasks_overdue(db)
+    total_task_in_progress = task_service.count_tasks_in_progress(db, user_id)
+    total_task_completed = task_service.count_tasks_completed(db, user_id)
+    total_task_pending = task_service.count_tasks_pending(db, user_id)
+    total_task_overdue = task_service.count_tasks_overdue(db, user_id)
 
     # 3. Get task information
-    upcoming_tasks = task_service.up_coming_tasks(db)
-    today_tasks = task_service.today_task(db)
-    upcoming_deadline_tasks = task_service.up_coming_deadline_tasks(db)
+    upcoming_tasks = task_service.up_coming_tasks(db, user_id)
+    today_tasks = task_service.today_task(db, user_id)
+    upcoming_deadline_tasks = task_service.up_coming_deadline_tasks(db, user_id)
 
     # 4. Get recent activities
-    recent_activities = activity_service.get_recent_activity_logs(db)
+    recent_activities = activity_service.get_recent_activity_logs(db, user_id)
 
     # 5. Return dashboard data
     dashboard_data = {
         "statistics": {
-            "total_users": total_users,
             "total_tasks": total_tasks,
             "total_categories": total_categories,
         },
