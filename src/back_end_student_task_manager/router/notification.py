@@ -16,6 +16,7 @@ router = APIRouter(
 
 
 # GET all notifications
+@router.get("", response_model=list[NotificationResponse], include_in_schema=False)
 @router.get("/", response_model=list[NotificationResponse])
 def index(db: Session = Depends(get_db)):
     return notification_controller.index(db)
@@ -28,6 +29,12 @@ def show(id: int, db: Session = Depends(get_db)):
 
 
 # CREATE notification
+@router.post(
+    "",
+    response_model=NotificationResponse,
+    status_code=status.HTTP_201_CREATED,
+    include_in_schema=False,
+)
 @router.post(
     "/",
     response_model=NotificationResponse,

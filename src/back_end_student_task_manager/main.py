@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from back_end_student_task_manager.router import (
+    dashboard,
     task,
     user,
     category,
@@ -11,9 +12,12 @@ from back_end_student_task_manager.router import (
 
 app = FastAPI(
     title="Student Task Manager API",
-    version="1.0.0"
+    description="API for managing student tasks",
+    version="1.0.0",
+    redirect_slashes=False,
 )
 
+app.include_router(dashboard.router, prefix="/api")
 app.include_router(user.router, prefix="/api")
 app.include_router(category.router, prefix="/api")
 app.include_router(task.router, prefix="/api")

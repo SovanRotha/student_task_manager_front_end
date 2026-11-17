@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from back_end_student_task_manager.model.task import Task
 from back_end_student_task_manager.schema.task import TaskCreate, TaskUpdate
@@ -81,3 +82,58 @@ def delete(db: Session, id: int):
     db.commit()
 
     return existing_task
+
+
+def get_tasks_by_user(db: Session, user_id: int):
+    return db.query(Task).filter(Task.user_id == user_id).all()
+
+def count_tasks(db: Session):
+    return db.query(Task).count()
+
+def count_tasks_in_progress(db: Session):
+    return db.query(Task).filter(Task.status == "in_progress").count()
+
+def count_tasks_completed(db: Session):
+    return db.query(Task).filter(Task.completed_at.isnot(None)).count()
+
+def count_tasks_pending(db: Session):
+    return db.query(Task).filter(Task.status == "pending").count()
+
+def count_tasks_overdue(db: Session):
+    return db.query(Task).filter(
+        Task.due_date < datetime.now(timezone.utc),
+        Task.completed_at.is_(None),
+    ).count()
+
+def up_coming_tasks(db: Session, user_id: int | None = None):
+    query = db.query(Task).filter(Task.due_date >= datetime.now(timezone.utc))
+    if user_id is not None:
+        query = query.filter(Task.user_id == user_id)
+    return query.all()
+
+def today_task(db: Session, user_id: int | None = None):
+    today = datetime.now(timezone.utc).date()
+    query = db.query(Task).filter(
+        Task.due_date != None,
+        func.date(Task.due_date) == today
+    )
+    if user_id is not None:
+        query = query.filter(Task.user_id == user_id)
+    return query.all()
+
+from datetime import datetime, timedelta, timezone
+
+def up_coming_deadline_tasks(db: Session, user_id: int | None = None):
+    now = datetime.now(timezone.utc)
+    upcoming_time = now + timedelta(hours=3)
+
+    query = db.query(Task).filter(
+        Task.due_date.isnot(None),
+        Task.due_date >= now,
+        Task.due_date <= upcoming_time
+    )
+
+    if user_id is not None:
+        query = query.filter(Task.user_id == user_id)
+
+    return query.order_by(Task.due_date.asc()).all()

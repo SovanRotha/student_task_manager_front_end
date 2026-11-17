@@ -8,6 +8,10 @@ from back_end_student_task_manager.schema.category import (
 def index(db: Session):
     return db.query(Category).all()
 
+
+def count_categories(db: Session):
+    return db.query(Category).count()
+
 def show(db: Session, id: int):
     return db.query(Category).filter(Category.id == id).first()
 

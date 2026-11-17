@@ -15,6 +15,7 @@ router = APIRouter(
 )
 
 
+@router.get("", response_model=list[UserResponse], include_in_schema=False)
 @router.get("/", response_model=list[UserResponse])
 def index(db: Session = Depends(get_db)):
     return user_controller.index(db)
@@ -25,6 +26,12 @@ def show(id: int, db: Session = Depends(get_db)):
     return user_controller.show(db, id)
 
 
+@router.post(
+    "",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    include_in_schema=False,
+)
 @router.post(
     "/",
     response_model=UserResponse,

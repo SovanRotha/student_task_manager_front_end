@@ -13,6 +13,7 @@ router = APIRouter(
     tags=["Tasks"]
 )
 
+@router.get("", response_model=list[TaskResponse], include_in_schema=False)
 @router.get("/", response_model=list[TaskResponse])
 def index(db: Session = Depends(get_db)):
     return task_controller.index(db)
@@ -21,6 +22,7 @@ def index(db: Session = Depends(get_db)):
 def show(id: int, db: Session = Depends(get_db)):
     return task_controller.show(db, id)
 
+@router.post("", response_model=TaskResponse, include_in_schema=False)
 @router.post("/", response_model=TaskResponse)
 def create(task: TaskCreate, db: Session = Depends(get_db)):
     return task_controller.create(db, task)

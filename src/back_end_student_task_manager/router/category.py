@@ -13,6 +13,7 @@ router = APIRouter(
     tags=["Categories"]
 )
 
+@router.get("", response_model=list[CategoryResponse], include_in_schema=False)
 @router.get("/", response_model=list[CategoryResponse])
 def index(db: Session = Depends(get_db)):
     return category_controller.index(db)
@@ -21,6 +22,7 @@ def index(db: Session = Depends(get_db)):
 def show(id: int, db: Session = Depends(get_db)):
     return category_controller.show(db, id)
 
+@router.post("", response_model=CategoryResponse, include_in_schema=False)
 @router.post("/", response_model=CategoryResponse)
 def create(category: CategoryCreate, db: Session = Depends(get_db)):
     return category_controller.create(db, category)

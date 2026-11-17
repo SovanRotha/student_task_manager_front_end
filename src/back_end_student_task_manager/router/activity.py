@@ -16,6 +16,7 @@ router = APIRouter(
 
 
 # GET all activity logs
+@router.get("", response_model=list[ActivityLogResponse], include_in_schema=False)
 @router.get("/", response_model=list[ActivityLogResponse])
 def index(db: Session = Depends(get_db)):
     return activity_controller.index(db)
@@ -34,6 +35,12 @@ def get_by_user(user_id: int, db: Session = Depends(get_db)):
 
 
 # CREATE activity log
+@router.post(
+    "",
+    response_model=ActivityLogResponse,
+    status_code=status.HTTP_201_CREATED,
+    include_in_schema=False,
+)
 @router.post(
     "/",
     response_model=ActivityLogResponse,
